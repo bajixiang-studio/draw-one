@@ -536,7 +536,7 @@ applyLang();
 var state={cards:[],settings:{back:"",cover:"",bg:"",god1:"",god2:"",god3:""},tab:"gallery",admin:false,canUpload:false,dirty:false,busy:false,
   q:"",open:null,openTab:"all",delConfirm:null,focus:"all",
   draw:{spread:1,phase:"idle",picks:[],flipped:[],rev:[],question:""}};
-var SDEF={back:"",cover:"",bg:"",god1:"",god2:"",god3:"",shop_url:"",shop_label:"",show_count:0,help_url:"",reversals:"",back_shape:"",theme_bg:"",theme_fg:"",theme_accent:""};
+var SDEF={back:"",cover:"",bg:"",god1:"",god2:"",god3:"",shop_url:"",shop_label:"",show_count:0,help_url:"",reversals:"",intro_on:"",intro_zh:"",intro_en:"",back_shape:"",theme_bg:"",theme_fg:"",theme_accent:""};
 state.decks=[];state.deck=null;state.tab="home";
 function shivaDeck(cards,settings){
   return {slug:"shiva",name:"In Shiva's Eyes",name_en:"In Shiva's Eyes",sub:"神諭卡",sub_en:"Oracle Deck",
@@ -774,10 +774,33 @@ var FEAT_IC=[
  '<svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6v36M14 12v10c0 5 4 8 10 8s10-3 10-8V12M14 12l-3 6h6zM34 12l-3 6h6z"/><path d="M16 40h16"/></svg>',
  '<svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="4"/><path d="M24 20c-3-6-3-10 0-14 3 4 3 8 0 14zM24 28c3 6 3 10 0 14-3-4-3-8 0-14zM20 24c-6-3-10-3-14 0 4 3 8 3 14 0zM28 24c6 3 10 3 14 0-4-3-8-3-14 0z"/></svg>',
  '<svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24c6-9 12-13 18-13s12 4 18 13c-6 9-12 13-18 13S12 33 6 24z"/><circle cx="24" cy="24" r="6"/><circle cx="24" cy="24" r="1.5" fill="currentColor"/></svg>'];
+
+var INTRO_DEF={runes:{zh:"{n} 張符文|二十四枚古老的盧恩符文,加上一張空白符文,各有主題,涵蓋財富、力量、旅程、保護、轉化與命運。\n正位與逆位|抽牌時會隨機出現正位或逆位,同一枚符文在不同的方向,帶來不同的提醒。\n七個生活面向|每張牌除了牌意與延伸意義,另有工作、健康、感情、家庭、人際、金錢、成長的分別解讀。\n不預言,只陪伴|符文不是宿命的宣判,而是一面鏡子,幫助你整理心緒、提出好問題。\n靜下來|深呼吸幾次,帶著一個你想了解的問題或心情。\n抽牌|單張牌看今日指引,三張牌看過去、現在、未來。\n對照解讀|先看直覺的感受,再讀牌意;留意牌是正位或逆位,並依問題選擇對應的面向。\n帶一句話走|選一句最有共鳴的話,放在今天的生活裡實踐。",
+ en:"{n} runes|Twenty-four ancient runes plus one blank rune, each with its own theme, covering wealth, strength, journeys, protection, transformation and fate.\nUpright & reversed|A rune may appear upright or reversed when drawn; the same rune in a different direction offers a different reminder.\nSeven areas of life|Besides its meaning and deeper meaning, every card has separate readings for work, health, love, family, relationships, money and personal growth.\nNo predictions, just company|Runes are not a verdict of fate but a mirror that helps you sort your thoughts and ask better questions.\nSettle|Take a few deep breaths and hold a question or feeling you want to understand.\nDraw|One card for today's guidance; three cards for past, present and future.\nRead|Notice your gut feeling first, then read the meaning; note whether the rune is upright or reversed, and pick the area that fits your question.\nTake one line with you|Choose the sentence that resonates most and put it into practice today."}};
+function introItems(s,dd){
+  var def=INTRO_DEF[state.deck]||null;
+  var txt=(LANG==="en"?(s.intro_en||""):(s.intro_zh||"")).trim();
+  if(!txt&&LANG==="en"&&(s.intro_zh||"").trim())txt="";
+  if(!txt&&def)txt=def[LANG==="en"?"en":"zh"];
+  if(!txt)return null;
+  var n=pool().length;
+  var rows=txt.split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean).map(function(l){
+    var i=l.search(/[|｜]/);var a=i<0?l:l.slice(0,i),b=i<0?"":l.slice(i+1);
+    return [a.trim().replace(/\{n\}/g,n),b.trim().replace(/\{n\}/g,n)]});
+  if(rows.length<8)return null;
+  return {feats:rows.slice(0,4),steps:rows.slice(4,8)};
+}
+var RUNE_IC='<svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="5" width="32" height="38" rx="4"/><path d="M19 13v22M19 19l11-6M19 28l11-6"/></svg>';
+function deckIntroHTML(s,dd){
+  if(s.intro_on==="0")return "";
+  var it=introItems(s,dd);if(!it)return "";
+  var ic=[FEAT_IC[0],RUNE_IC,FEAT_IC[2],FEAT_IC[3]];
+  return '<section class="intro" aria-label="牌卡介紹"><div class="feats">'+it.feats.map(function(f,i){return '<div class="feat">'+ic[i]+'<b>'+esc(f[0])+'</b><p>'+esc(f[1])+'</p></div>'}).join("")+'</div><h3 class="ihow">如何使用這副牌</h3><ol class="steps">'+it.steps.map(function(f,i){return '<li><span class="num">'+(i+1)+'</span><div><b>'+esc(f[0])+'</b><p>'+esc(f[1])+'</p></div></li>'}).join("")+'</ol><div class="cta"><button class="btn" data-act="tab" data-v="draw">開始線上抽牌 →</button></div></section>';
+}
 function aboutHTML(){
   var s=state.settings,dd=curDeck()||{};
   if(state.deck!=="shiva"){
-    return '<section class="about" aria-label="關於這副牌">'+(s.cover?'<div class="cvw">'+mandalaSVG()+'<div class="cv"><img src="'+esc(src(s.cover))+'" alt="'+esc(dn())+'"></div></div>':'')+'<div><div class="eyebrow">ABOUT THE DECK</div><h2>'+esc(dn())+'</h2><p>'+esc(dtx(dd,"descr"))+'</p></div></section>';
+    return '<section class="about" aria-label="關於這副牌">'+(s.cover?'<div class="cvw">'+mandalaSVG()+'<div class="cv"><img src="'+esc(src(s.cover))+'" alt="'+esc(dn())+'"></div></div>':'')+'<div><div class="eyebrow">ABOUT THE DECK</div><h2>'+esc(dn())+'</h2><p>'+esc(dtx(dd,"descr"))+'</p></div></section>'+deckIntroHTML(s,dd);
   }
   if(!s.cover)return "";
   var n=pool().length;
