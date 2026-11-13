@@ -48,7 +48,7 @@ var C=window.SHIVA||{},BUCKET="shiva";
 var root=document.getElementById("root");
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
 var CATS=[["work","工作事業"],["health","健康身心"],["love","感情"],["family","家庭"],["social","人際關係"],["money","金錢財富"],["growth","個人成長"]];
-var SHOPDEF="https://athenalee768.github.io/eight-auspicious/shop.html";
+var SHOPDEF="https://bajixiang-studio.github.io/shop.html";
 var SETS_ALL=[["bg","網頁背景圖"],["back","牌背圖(抽牌用)"],["cover","牌盒封面 / 首頁牌組封面"],["god1","三神卡:梵天","shiva"],["god2","三神卡:毗濕奴","shiva"],["god3","三神卡:濕婆","shiva"]];
 var st={decks:[],deck:null,cards:[],q:"",open:{},needMigrate:false};
 function cur(){return st.decks.filter(function(d){return d.slug===st.deck})[0]||null}
@@ -91,7 +91,7 @@ function view(){
    '<div class="grid2"><div><label>中文副標(例如:神諭卡)</label><input data-d="sub" value="'+esc(dk.sub)+'"></div><div><label>English subtitle</label><input data-d="sub_en" value="'+esc(dk.sub_en)+'"></div></div>'+
    '<label>中文簡介(顯示在首頁牌組卡片)</label><textarea data-d="descr">'+esc(dk.descr)+'</textarea><label>English description</label><textarea data-d="descr_en">'+esc(dk.descr_en)+'</textarea>'+
    '<div class="grid2"><div><label>排序(數字小的在前)</label><input data-d="sort" type="number" value="'+esc(dk.sort==null?0:dk.sort)+'"></div><div><label>是否顯示在首頁</label><select data-d="published"><option value="true"'+(dk.published!==false?' selected':'')+'>顯示</option><option value="false"'+(dk.published===false?' selected':'')+'>隱藏</option></select></div></div>'+
-   '<h3 style="margin:18px 0 4px;font-size:1rem">商城導購(選填)</h3><p class="muted" style="margin:0 0 8px">填了網址,這個牌組的「牌卡介紹」頁與抽牌結果下方就會出現「前往商城選購」按鈕;留空就不顯示(適合還沒販售的牌組)。</p><div class="grid2"><div><label>商品或商城網址</label><input data-shop="shop_url" placeholder="https://athenalee768.github.io/eight-auspicious/shop.html" value="'+esc(ds.shop_url||(dk.slug==="shiva"?SHOPDEF:""))+'"></div><div><label>按鈕文字(留空用預設)</label><input data-shop="shop_label" placeholder="前往八吉祥商城選購" value="'+esc(ds.shop_label||"")+'"></div></div>'+
+   '<h3 style="margin:18px 0 4px;font-size:1rem">商城導購(選填)</h3><p class="muted" style="margin:0 0 8px">填了網址,這個牌組的「牌卡介紹」頁與抽牌結果下方就會出現「前往商城選購」按鈕;留空就不顯示(適合還沒販售的牌組)。</p><div class="grid2"><div><label>商品或商城網址</label><input data-shop="shop_url" placeholder="https://bajixiang-studio.github.io/shop.html" value="'+esc(ds.shop_url||(dk.slug==="shiva"?SHOPDEF:""))+'"></div><div><label>按鈕文字(留空用預設)</label><input data-shop="shop_label" placeholder="前往八吉祥商城選購" value="'+esc(ds.shop_label||"")+'"></div></div>'+
    '<div style="margin-top:10px"><label>「老師解牌」按鈕連結(留空 = 使用八吉祥「老師解牌說明」頁面,一般不用填)</label><input data-shop="help_url" placeholder="https://..." value="'+esc(ds.help_url||"")+'"></div>'+
    '<div class="grid2" style="margin-top:10px"><div><label>牌卡介紹頁展示張數(0 = 全部展示;其餘以牌背呈現)</label><input data-shop="show_count" type="number" min="0" value="'+esc(ds.show_count==null?(dk.slug==="shiva"?8:0):ds.show_count)+'"></div></div>'+
    '<h3 style="margin:18px 0 4px;font-size:1rem">外觀(選填)</h3><p class="muted" style="margin:0 0 8px">讓這副牌的介紹頁與抽牌頁有自己的配色與牌框形狀;不啟用就沿用預設的深藍加金色。</p>'+
